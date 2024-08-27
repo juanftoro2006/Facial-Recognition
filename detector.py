@@ -155,3 +155,9 @@ if __name__ == "__main__":
         validate(model=args.m)
     if args.test:
         recognize_faces(image_location=args.f, model=args.m)
+
+def run():
+    return {
+        'nombre': 'Juan Perez',
+        'edad': 45
+    }
