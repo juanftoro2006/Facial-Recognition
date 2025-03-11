@@ -38,7 +38,7 @@ args = parser.parse_args()
 
 
 def encode_known_faces(
-    model: str = "hog", encodings_location: Path = DEFAULT_ENCODINGS_PATH
+        model: str = "hog", encodings_location: Path = DEFAULT_ENCODINGS_PATH
 ) -> None:
     """
     Loads images in the training directory and builds a dictionary of their
@@ -82,7 +82,7 @@ def recognize_faces(
     )
     input_face_encodings = face_recognition.face_encodings(
         input_image, input_face_locations
-        )
+    )
     pillow_image = Image.fromarray(input_image)
     draw = ImageDraw.Draw(pillow_image)
 
@@ -156,8 +156,10 @@ if __name__ == "__main__":
     if args.test:
         recognize_faces(image_location=args.f, model=args.m)
 
+
 def run():
     return {
-        'nombre': 'Juan Perez',
+        'Nombres': 'Juan Perez',
+        'Apellidos': 'toro',
         'edad': 45
     }
