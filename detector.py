@@ -3,9 +3,8 @@ import argparse
 import pickle
 from collections import Counter
 from pathlib import Path
-
 import face_recognition
-from PIL import Image, ImageDraw
+from PIL import Image, ImageDraw, ImageOps
 
 DEFAULT_ENCODINGS_PATH = Path("output/encodings.pkl")
 BOUNDING_BOX_COLOR = "blue"
@@ -84,6 +83,8 @@ def recognize_faces(
         input_image, input_face_locations
     )
     pillow_image = Image.fromarray(input_image)
+    pillow_image = ImageOps.exif_transpose(pillow_image)
+    
     draw = ImageDraw.Draw(pillow_image)
 
     for bounding_box, unknown_encoding in zip(
@@ -159,7 +160,7 @@ if __name__ == "__main__":
 
 def run():
     return {
-        'Nombres': 'Juan Perez',
+        'Nombres': 'Juan',
         'Apellidos': 'toro',
         'edad': 45
     }
