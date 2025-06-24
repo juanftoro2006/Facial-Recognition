@@ -1,0 +1,19 @@
+# Entornos virtuales
+venv/
+new_env/
+
+# Archivos de configuración del sistema
+.DS_Store
+Thumbs.db
+
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Archivos de logs
+*.log
+
+# Archivos grandes o modelos
+*.dat
+*.pkl
