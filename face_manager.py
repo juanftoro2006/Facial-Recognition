@@ -1,28 +1,23 @@
 # face_manager.py
-"""
 
-NOTA DE JUAN TORO:   SE HA DETENIDO ESTE AVANCE DEL PROYECTO POR QUE 
+"""
+NOTA DE JUAN TORO: SE HA DETENIDO ESTE AVANCE DEL PROYECTO PORQUE 
 SE DEBE TRABAJAR EN PUBLICAR EL PROYECTO EN GITHUB Y HACER UN MANUAL DE USO.
 LAS MEJORAS QUE SE PUEDEN HACER SON:
 - Implementar una interfaz gráfica de usuario (GUI) para facilitar la interacción.
 - Añadir más modelos de reconocimiento facial y permitir al usuario elegir.
-- Se modificara en bloque las imagenes para que no pesen tanto.
+- Se modificará en bloque las imágenes para que no pesen tanto.
 - Mejorar la gestión de errores y excepciones.
-
-
 
 Script base para centralizar y gestionar funciones relacionadas con el reconocimiento facial.
 Más adelante servirá como backend para integrarlo con un frontend o una API.
-
-
-
 """
 
 # Importamos módulos necesarios
 from pathlib import Path
 import face_recognition
 import pickle
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageDraw, ImageOps, ImageFont
 from collections import Counter
 
 # Ruta por defecto para guardar/leer las codificaciones de rostros conocidos
@@ -32,7 +27,9 @@ DEFAULT_ENCODINGS_PATH = Path("output/encodings.pkl")
 BOUNDING_BOX_COLOR = "blue"
 TEXT_COLOR = "white"
 
-# Función para cargar las codificaciones entrenadas
+# ---------------------------- #
+# CARGA DE CODIFICACIONES
+# ---------------------------- #
 def load_encodings(encodings_path=DEFAULT_ENCODINGS_PATH):
     """
     Carga las codificaciones desde un archivo pickle.
@@ -40,7 +37,9 @@ def load_encodings(encodings_path=DEFAULT_ENCODINGS_PATH):
     with encodings_path.open("rb") as f:
         return pickle.load(f)
 
-# Función para reconocer rostros en una imagen
+# ---------------------------- #
+# RECONOCIMIENTO EN IMAGEN
+# ---------------------------- #
 def recognize_faces_from_image(image_path, model="hog"):
     """
     Reconoce rostros en una imagen dada y dibuja los resultados.
@@ -60,26 +59,45 @@ def recognize_faces_from_image(image_path, model="hog"):
     for location, encoding in zip(face_locations, face_encodings):
         name = get_best_match(encoding, loaded_encodings)
         name = name if name else "Desconocido"
-        draw_face(draw, location, name)
+        draw_face(draw, location, name, font_size=22)  # Tamaño de letra ajustable
 
     pillow_image.show()
 
-# Función que compara un rostro desconocido con los conocidos
+# ---------------------------- #
+# MEJOR COINCIDENCIA DE ROSTRO
+# ---------------------------- #
 def get_best_match(unknown_encoding, loaded_encodings):
+    """
+    Compara un rostro desconocido con los conocidos y devuelve el nombre con más coincidencias.
+    """
     matches = face_recognition.compare_faces(loaded_encodings["encodings"], unknown_encoding)
     votes = Counter(
         name for match, name in zip(matches, loaded_encodings["names"]) if match
     )
     return votes.most_common(1)[0][0] if votes else None
 
-# Dibuja el recuadro y nombre sobre la imagen
-def draw_face(draw, location, name):
+# ---------------------------- #
+# DIBUJAR RECUADRO Y NOMBRE
+# ---------------------------- #
+def draw_face(draw, location, name, font_size=18):
+    """
+    Dibuja un recuadro y el nombre sobre la cara detectada con tamaño de fuente ajustable.
+    """
     top, right, bottom, left = location
     draw.rectangle(((left, top), (right, bottom)), outline=BOUNDING_BOX_COLOR)
-    draw.text((left, bottom + 5), name, fill=TEXT_COLOR)
 
-# Prueba rápida (modo script directo)
+    # Intentamos usar una fuente TrueType (ej: Arial)
+    try:
+        font = ImageFont.truetype("arial.ttf", font_size)
+    except:
+        font = ImageFont.load_default()
+
+    draw.text((left, bottom + 5), name, fill=TEXT_COLOR, font=font)
+
+# ---------------------------- #
+# EJECUCIÓN DIRECTA DESDE TERMINAL
+# ---------------------------- #
 if __name__ == "__main__":
-    # Acá podrías probar directamente desde consola
+    # Prueba directa desde consola
     test_image = "validation/validacion-1.jpg"
     recognize_faces_from_image(test_image)
